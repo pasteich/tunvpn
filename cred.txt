@@ -1,0 +1,152 @@
+// ============================================================================
+//  cred.txt — получение -pipe и -token для туннеля / приложения TunVPN
+// ============================================================================
+//
+//  ИНСТРУКЦИЯ:
+//   1. Открой https://notes.mail.ru в браузере на компьютере и залогинься.
+//   2. Открой DevTools → вкладка Console (F12, затем "Console").
+//   3. Скопируй ВЕСЬ этот файл и вставь в консоль, нажми Enter.
+//      Должна появиться строка: "хук + парсер реквизитов установлен …".
+//   4. Открой любую заметку (тогда страница создаст WebSocket-пайп).
+//   5. Как только найдутся оба значения, в консоли напечатается готовая строка:
+//         ────────── ГОТОВО, для копипаста ──────────
+//         -pipe '$<uuid>'  -token 'o:<hex>.c:<digits>'
+//         ───────────────────────────────────────────
+//   6. Вставь эти pipe и token в поля приложения (Pipe key / Token),
+//      или в запуск туннеля: ./tun -client -pipe … -token …
+//
+//  КОМАНДЫ в консоли:
+//     wsCreds()  — показать найденные pipeid и token
+//     wsCopy()   — скопировать готовую строку "-pipe … -token …" в буфер
+//     wsList()   — таблица перехваченных кадров
+//     wsHex(i)   — hex-дамп кадра i
+//     wsSave()   — скачать все кадры (JSON);  wsSaveBin() — бинарём
+//
+//  ВАЖНО: pipe/token — это твои личные креды сессии, не делись ими.
+//  Пара привязана к сессии notes.mail.ru и протухает: если туннель начал
+//  отвечать "Unauthorized (4401)" — запусти скрипт снова и возьми свежую пару.
+//  Скрипт только читает трафик в твоей вкладке и никуда ничего не отправляет.
+// ============================================================================
+
+// Вставить в консоль DevTools, затем зайти в заметки.
+// Хранит сырые байты + сам вытаскивает pipeid и token, печатает готовую строку.
+// Команды: wsCreds() wsCopy() wsList() wsHex(i) wsFrame(i) wsSave() wsSaveBin()
+(() => {
+  let N = window.WebSocket;
+  while (N.__hooked) N = Object.getPrototypeOf(N);
+
+  const MAX = 20000;
+  const L = window.__ws = [];
+  const enc = new TextEncoder();
+  const t = () => new Date().toISOString().substr(11, 12);
+
+  const hex = (u8, n) => Array.from(u8.slice(0, n || u8.length)).map(b => b.toString(16).padStart(2, '0')).join(' ');
+  const ascii = (u8, n) => Array.from(u8.slice(0, n || u8.length)).map(b => (b >= 32 && b < 127) ? String.fromCharCode(b) : '.').join('');
+  const asStr = u8 => new TextDecoder('utf-8', { fatal: false }).decode(u8);
+
+  // ---------- извлечение реквизитов ----------
+  const creds = window.__creds = { pipeid: null, token: null };
+  const RE_TOKEN = /o:[0-9a-f]+\.c:\d+/i;
+  const RE_UUID = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
+
+  function scan(e) {
+    const s = asStr(e.bytes);
+    // token: строка вида o:<hex>.c:<digits>
+    if (!creds.token) {
+      const m = s.match(RE_TOKEN);
+      if (m) { creds.token = m[0]; announce('token', m[0]); }
+    }
+    // pipeid: UUID. Берём из URL сокета, если есть, иначе из тела кадра
+    if (!creds.pipeid) {
+      const mUrl = (e.url || '').match(RE_UUID);
+      const m = mUrl || s.match(RE_UUID);
+      if (m) { creds.pipeid = m[0]; announce('pipeid', m[0]); }
+    }
+    if (creds.pipeid && creds.token && !creds.__done) { creds.__done = true; printReady(); }
+  }
+
+  function announce(k, v) { console.log('%c[+] ' + k + ' = ' + v, 'color:#f1c40f;font-weight:bold'); }
+
+  function credLine() {
+    return "-pipe '$" + creds.pipeid + "'  -token '" + creds.token + "'";
+  }
+  function printReady() {
+    console.log('%c────────── ГОТОВО, для копипаста ──────────', 'color:#2ecc71;font-weight:bold');
+    console.log('%c' + credLine(), 'color:#2ecc71');
+    console.log('%c───────────────────────────────────────────', 'color:#2ecc71;font-weight:bold');
+  }
+
+  // ---------- запись байтов ----------
+  function slot(dir, url, kind) {
+    const e = { time: t(), ts: Date.now(), dir, url, kind, bytes: null, len: 0 };
+    L.push(e); if (L.length > MAX) L.shift();
+    return e;
+  }
+  function fill(e, u8) {
+    e.bytes = u8; e.len = u8.length;
+    const c = e.dir === '>>' ? '#e67e22' : '#27ae60';
+    console.log('%c' + e.dir + ' ' + e.time + ' [' + e.len + 'b]',
+      'color:' + c + ';font-weight:bold', hex(u8, 24) + (e.len > 24 ? ' …' : ''), '|', ascii(u8, 40));
+    scan(e);
+  }
+  function grab(d, e) {
+    if (typeof d === 'string') return fill(e, enc.encode(d));
+    if (d instanceof ArrayBuffer) return fill(e, new Uint8Array(d.slice(0)));
+    if (ArrayBuffer.isView(d)) return fill(e, new Uint8Array(d.buffer.slice(d.byteOffset, d.byteOffset + d.byteLength)));
+    if (typeof Blob !== 'undefined' && d instanceof Blob) return void d.arrayBuffer().then(b => fill(e, new Uint8Array(b)));
+    fill(e, enc.encode(String(d)));
+  }
+
+  class H extends N {
+    constructor(u, p) {
+      super(u, p);
+      this.__u = String(u);
+      console.log('%c-- CONNECT ' + this.__u, 'color:#4da3ff');
+      // pipeid часто есть прямо в query сокета
+      const mu = this.__u.match(RE_UUID);
+      if (mu && !creds.pipeid) { creds.pipeid = mu[0]; announce('pipeid (из url)', mu[0]); }
+      super.addEventListener('message', ev => grab(ev.data, slot('<<', this.__u, typeof ev.data === 'string' ? 'text' : 'bin')));
+      super.addEventListener('close', ev => console.log('%c-- CLOSE ' + ev.code, 'color:#888'));
+    }
+    send(d) { grab(d, slot('>>', this.__u, typeof d === 'string' ? 'text' : 'bin')); return super.send(d); }
+  }
+  H.__hooked = true;
+  Object.defineProperty(H, 'name', { value: 'WebSocket' });
+  H.prototype.toString = () => 'function WebSocket() { [native code] }';
+  ['CONNECTING', 'OPEN', 'CLOSING', 'CLOSED'].forEach((k, i) => H[k] = i);
+  window.WebSocket = H;
+
+  // ---------- утилиты ----------
+  const b64 = u8 => { let s = ''; for (let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000)); return btoa(s); };
+  const dl = (blob, name) => { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 5000); };
+  const ready = () => L.filter(e => e.bytes);
+
+  window.wsCreds = () => { console.log('pipeid:', creds.pipeid, '\ntoken :', creds.token); return creds; };
+
+  window.wsCopy = () => {
+    const line = credLine();
+    if (navigator.clipboard) navigator.clipboard.writeText(line).then(
+      () => console.log('%cскопировано в буфер обмена', 'color:#2ecc71'),
+      () => console.log(line));
+    else console.log(line);
+    return line;
+  };
+
+  window.wsList = () => console.table(ready().map((e, i) => ({ i, time: e.time, dir: e.dir, len: e.len, head: hex(e.bytes, 12) })));
+  window.wsHex = (i, max) => {
+    const u = L[i].bytes, n = Math.min(u.length, max || 512); let s = '';
+    for (let o = 0; o < n; o += 16) { const r = u.subarray(o, o + 16); s += o.toString(16).padStart(6, '0') + '  ' + hex(r).padEnd(47) + '  ' + ascii(r) + '\n'; }
+    console.log(s + (u.length > n ? '… всего ' + u.length + ' байт\n' : ''));
+  };
+  window.wsFrame = i => dl(new Blob([L[i].bytes], { type: 'application/octet-stream' }), 'frame-' + i + '.bin');
+  window.wsSave = () => dl(new Blob([JSON.stringify(ready().map(e => ({ time: e.time, ts: e.ts, dir: e.dir, url: e.url, len: e.len, b64: b64(e.bytes) })), null, 2)], { type: 'application/json' }), 'ws-frames-' + Date.now() + '.json');
+  window.wsSaveBin = () => {
+    const f = ready(), total = f.reduce((s, e) => s + 13 + e.len, 6), out = new Uint8Array(total), dv = new DataView(out.buffer);
+    out.set(enc.encode('WSLOG1'), 0); let o = 6;
+    for (const e of f) { out[o] = e.dir === '>>' ? 0x3e : 0x3c; o++; dv.setFloat64(o, e.ts, true); o += 8; dv.setUint32(o, e.len, true); o += 4; out.set(e.bytes, o); o += e.len; }
+    dl(new Blob([out], { type: 'application/octet-stream' }), 'ws-frames-' + Date.now() + '.bin');
+  };
+  window.wsClear = () => { L.length = 0; };
+
+  console.log('%cхук + парсер реквизитов установлен. При появлении pipeid и token будет напечатана готовая строка.\nКоманды: wsCreds() wsCopy() wsList() wsHex(i) wsSave()', 'color:#4da3ff;font-weight:bold');
+})();

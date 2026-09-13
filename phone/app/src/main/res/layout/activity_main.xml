@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <!-- ===================== TUNNEL TAB ===================== -->
+        <LinearLayout
+            android:id="@+id/tab_tunnel"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <androidx.core.widget.NestedScrollView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:fillViewport="true">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cardCornerRadius="24dp"
+                        app:cardElevation="0dp"
+                        app:cardBackgroundColor="?attr/colorPrimaryContainer"
+                        android:layout_marginBottom="20dp">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:gravity="center_horizontal"
+                            android:padding="24dp">
+                            <TextView android:id="@+id/hero_icon"
+                                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                android:text="🔒" android:textSize="40sp" />
+                            <TextView android:id="@+id/hero_status"
+                                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                android:text="Disconnected" android:textSize="24sp" android:textStyle="bold"
+                                android:textColor="?attr/colorOnPrimaryContainer" android:paddingTop="8dp" />
+                            <TextView android:id="@+id/hero_sub"
+                                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                android:text="Whole-device traffic is not protected" android:textSize="13sp"
+                                android:gravity="center" android:alpha="0.75"
+                                android:textColor="?attr/colorOnPrimaryContainer" android:paddingTop="2dp" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <TextView style="@style/Section" android:text="Connection" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Field" android:hint="Pipe key"
+                        app:helperText="Session key from notes.mail.ru (starts with $)"
+                        app:startIconDrawable="@android:drawable/ic_menu_share">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/et_pipe"
+                            android:layout_width="match_parent" android:layout_height="wrap_content"
+                            android:inputType="text" android:singleLine="true" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Field" android:hint="Token"
+                        app:helperText="Auth token for the pipe"
+                        app:startIconDrawable="@android:drawable/ic_lock_idle_lock">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/et_token"
+                            android:layout_width="match_parent" android:layout_height="wrap_content"
+                            android:inputType="text" android:singleLine="true" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Field.Dropdown" android:hint="Speed mode"
+                        app:helperText="awareness = most compatible · sync = faster">
+                        <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                            android:id="@+id/dd_transport"
+                            android:layout_width="match_parent" android:layout_height="wrap_content"
+                            android:inputType="none" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        app:cardCornerRadius="16dp" app:cardElevation="0dp"
+                        app:strokeWidth="1dp" app:strokeColor="#22808080">
+                        <LinearLayout
+                            android:layout_width="match_parent" android:layout_height="wrap_content"
+                            android:orientation="vertical">
+                            <LinearLayout android:id="@+id/hdr_advanced"
+                                android:layout_width="match_parent" android:layout_height="wrap_content"
+                                android:orientation="horizontal" android:gravity="center_vertical"
+                                android:background="?attr/selectableItemBackground"
+                                android:paddingHorizontal="16dp" android:paddingVertical="16dp"
+                                android:clickable="true" android:focusable="true">
+                                <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                                    android:layout_weight="1" android:text="Advanced settings"
+                                    android:textSize="15sp" android:textStyle="bold" />
+                                <TextView android:id="@+id/chev_advanced"
+                                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                    android:text="▸" android:textSize="16sp" android:alpha="0.7" />
+                            </LinearLayout>
+
+                            <LinearLayout android:id="@+id/box_advanced"
+                                android:layout_width="match_parent" android:layout_height="wrap_content"
+                                android:orientation="vertical" android:visibility="gone"
+                                android:paddingHorizontal="16dp" android:paddingBottom="8dp">
+
+                                <TextView style="@style/Section" android:text="Endpoint" />
+                                <com.google.android.material.textfield.TextInputLayout
+                                    style="@style/Field" android:hint="WebSocket URL">
+                                    <com.google.android.material.textfield.TextInputEditText
+                                        android:id="@+id/et_url"
+                                        android:layout_width="match_parent" android:layout_height="wrap_content"
+                                        android:inputType="textUri" android:singleLine="true" />
+                                </com.google.android.material.textfield.TextInputLayout>
+                                <com.google.android.material.textfield.TextInputLayout
+                                    style="@style/Field" android:hint="Cookie (optional)">
+                                    <com.google.android.material.textfield.TextInputEditText
+                                        android:id="@+id/et_cookie"
+                                        android:layout_width="match_parent" android:layout_height="wrap_content"
+                                        android:inputType="text" android:singleLine="true" />
+                                </com.google.android.material.textfield.TextInputLayout>
+
+                                <TextView style="@style/Section" android:text="Throughput tuning" />
+                                <LinearLayout style="@style/Row">
+                                    <com.google.android.material.textfield.TextInputLayout style="@style/Field.Half" android:hint="lanes">
+                                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/et_lanes"
+                                            android:layout_width="match_parent" android:layout_height="wrap_content"
+                                            android:inputType="number" android:singleLine="true" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                    <Space android:layout_width="12dp" android:layout_height="wrap_content" />
+                                    <com.google.android.material.textfield.TextInputLayout style="@style/Field.Half" android:hint="sockets">
+                                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/et_sockets"
+                                            android:layout_width="match_parent" android:layout_height="wrap_content"
+                                            android:inputType="number" android:singleLine="true" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                                <LinearLayout style="@style/Row">
+                                    <com.google.android.material.textfield.TextInputLayout style="@style/Field.Half" android:hint="window">
+                                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/et_window"
+                                            android:layout_width="match_parent" android:layout_height="wrap_content"
+                                            android:inputType="number" android:singleLine="true" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                    <Space android:layout_width="12dp" android:layout_height="wrap_content" />
+                                    <com.google.android.material.textfield.TextInputLayout style="@style/Field.Half" android:hint="chunk (bytes)">
+                                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/et_chunk"
+                                            android:layout_width="match_parent" android:layout_height="wrap_content"
+                                            android:inputType="number" android:singleLine="true" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                                <LinearLayout style="@style/Row">
+                                    <com.google.android.material.textfield.TextInputLayout style="@style/Field.Half" android:hint="writebuf">
+                                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/et_writebuf"
+                                            android:layout_width="match_parent" android:layout_height="wrap_content"
+                                            android:inputType="number" android:singleLine="true" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                    <Space android:layout_width="12dp" android:layout_height="wrap_content" />
+                                    <com.google.android.material.textfield.TextInputLayout style="@style/Field.Half" android:hint="state-cap">
+                                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/et_statecap"
+                                            android:layout_width="match_parent" android:layout_height="wrap_content"
+                                            android:inputType="number" android:singleLine="true" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                                <LinearLayout style="@style/Row">
+                                    <com.google.android.material.textfield.TextInputLayout style="@style/Field.Half" android:hint="republish">
+                                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/et_republish"
+                                            android:layout_width="match_parent" android:layout_height="wrap_content"
+                                            android:inputType="text" android:singleLine="true" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                    <Space android:layout_width="12dp" android:layout_height="wrap_content" />
+                                    <com.google.android.material.textfield.TextInputLayout style="@style/Field.Half" android:hint="cwnd (bytes)">
+                                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/et_cwnd"
+                                            android:layout_width="match_parent" android:layout_height="wrap_content"
+                                            android:inputType="number" android:singleLine="true" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                                <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/sw_base64"
+                                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                                    android:text="base64 payload encoding" android:paddingVertical="8dp" />
+                                <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/sw_debug"
+                                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                                    android:text="verbose debug logging" android:paddingVertical="8dp" />
+
+                                <TextView style="@style/Section" android:text="Network" />
+                                <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/sw_block_aaaa"
+                                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                                    android:text="Force IPv4 DNS (block AAAA) — fixes stuck sites"
+                                    android:paddingVertical="8dp" />
+                                <LinearLayout style="@style/Row">
+                                    <com.google.android.material.textfield.TextInputLayout style="@style/Field.Half" android:hint="DNS (forced)">
+                                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/et_dns"
+                                            android:layout_width="match_parent" android:layout_height="wrap_content"
+                                            android:inputType="text" android:singleLine="true" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                    <Space android:layout_width="12dp" android:layout_height="wrap_content" />
+                                    <com.google.android.material.textfield.TextInputLayout style="@style/Field.Half" android:hint="MTU">
+                                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/et_mtu"
+                                            android:layout_width="match_parent" android:layout_height="wrap_content"
+                                            android:inputType="number" android:singleLine="true" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                                <com.google.android.material.textfield.TextInputLayout style="@style/Field" android:hint="SOCKS port (local)">
+                                    <com.google.android.material.textfield.TextInputEditText android:id="@+id/et_port"
+                                        android:layout_width="match_parent" android:layout_height="wrap_content"
+                                        android:inputType="number" android:singleLine="true" />
+                                </com.google.android.material.textfield.TextInputLayout>
+                            </LinearLayout>
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <Space android:layout_width="match_parent" android:layout_height="12dp" />
+                </LinearLayout>
+            </androidx.core.widget.NestedScrollView>
+
+            <LinearLayout
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:gravity="center_vertical"
+                android:background="?attr/colorSurface" android:elevation="16dp"
+                android:paddingHorizontal="16dp" android:paddingVertical="12dp">
+                <TextView android:id="@+id/tv_status"
+                    android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                    android:text="● Stopped" android:textSize="15sp" android:textStyle="bold" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/btn_toggle"
+                    android:layout_width="wrap_content" android:layout_height="54dp"
+                    android:minWidth="160dp" android:text="Start VPN" android:textSize="16sp"
+                    app:cornerRadius="16dp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- ===================== SERVER TAB ===================== -->
+        <LinearLayout
+            android:id="@+id/tab_server"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <androidx.core.widget.NestedScrollView
+                android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1"
+                android:fillViewport="true">
+                <LinearLayout
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="vertical" android:padding="16dp">
+
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Deploy server" android:textSize="22sp" android:textStyle="bold"
+                        android:textColor="?attr/colorPrimary" />
+                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:text="Push the tunnel binary to your server over SSH and run it as a systemd service. Uses the Pipe key / Token / Speed mode from the Tunnel tab."
+                        android:textSize="13sp" android:alpha="0.75" android:paddingBottom="12dp" />
+
+                    <TextView style="@style/Section" android:text="SSH" />
+                    <com.google.android.material.textfield.TextInputLayout style="@style/Field" android:hint="Server host / IP"
+                        app:startIconDrawable="@android:drawable/ic_menu_mapmode">
+                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/et_ssh_host"
+                            android:layout_width="match_parent" android:layout_height="wrap_content"
+                            android:inputType="textUri" android:singleLine="true" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                    <LinearLayout style="@style/Row">
+                        <com.google.android.material.textfield.TextInputLayout style="@style/Field.Half" android:hint="SSH user">
+                            <com.google.android.material.textfield.TextInputEditText android:id="@+id/et_ssh_user"
+                                android:layout_width="match_parent" android:layout_height="wrap_content"
+                                android:inputType="text" android:singleLine="true" />
+                        </com.google.android.material.textfield.TextInputLayout>
+                        <Space android:layout_width="12dp" android:layout_height="wrap_content" />
+                        <com.google.android.material.textfield.TextInputLayout style="@style/Field.Half" android:hint="SSH port">
+                            <com.google.android.material.textfield.TextInputEditText android:id="@+id/et_ssh_port"
+                                android:layout_width="match_parent" android:layout_height="wrap_content"
+                                android:inputType="number" android:singleLine="true" />
+                        </com.google.android.material.textfield.TextInputLayout>
+                    </LinearLayout>
+                    <com.google.android.material.textfield.TextInputLayout style="@style/Field" android:hint="SSH password"
+                        app:endIconMode="password_toggle" app:startIconDrawable="@android:drawable/ic_lock_idle_lock">
+                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/et_ssh_pass"
+                            android:layout_width="match_parent" android:layout_height="wrap_content"
+                            android:inputType="textPassword" android:singleLine="true" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:orientation="horizontal" android:layout_marginTop="4dp">
+                        <com.google.android.material.button.MaterialButton android:id="@+id/btn_update_creds"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
+                            android:text="Update creds" app:cornerRadius="14dp" />
+                        <Space android:layout_width="10dp" android:layout_height="wrap_content" />
+                        <com.google.android.material.button.MaterialButton android:id="@+id/btn_uninstall"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
+                            android:text="Remove" app:cornerRadius="14dp"
+                            app:strokeColor="#E74C3C" android:textColor="#E74C3C" />
+                    </LinearLayout>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        app:cardCornerRadius="16dp" app:cardElevation="0dp"
+                        app:strokeWidth="1dp" app:strokeColor="#22808080">
+                        <LinearLayout
+                            android:layout_width="match_parent" android:layout_height="wrap_content"
+                            android:orientation="vertical" android:padding="16dp">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                android:text="Progress" android:textStyle="bold" android:paddingBottom="8dp" />
+                            <com.google.android.material.progressindicator.LinearProgressIndicator
+                                android:id="@+id/deploy_progress"
+                                android:layout_width="match_parent" android:layout_height="wrap_content"
+                                android:layout_marginBottom="12dp"
+                                app:trackCornerRadius="6dp"
+                                app:indicatorColor="?attr/colorPrimary"
+                                android:max="100" android:progress="0" />
+                            <LinearLayout android:id="@+id/deploy_steps"
+                                android:layout_width="match_parent" android:layout_height="wrap_content"
+                                android:orientation="vertical" />
+                            <TextView android:id="@+id/deploy_hint"
+                                android:layout_width="match_parent" android:layout_height="wrap_content"
+                                android:text="Fill SSH details and tap Deploy."
+                                android:textSize="12sp" android:alpha="0.6" android:paddingTop="6dp" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <Space android:layout_width="match_parent" android:layout_height="12dp" />
+                </LinearLayout>
+            </androidx.core.widget.NestedScrollView>
+
+            <LinearLayout
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:gravity="center_vertical"
+                android:background="?attr/colorSurface" android:elevation="16dp"
+                android:paddingHorizontal="16dp" android:paddingVertical="12dp">
+                <TextView android:id="@+id/deploy_status"
+                    android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                    android:text="Idle" android:textSize="15sp" android:textStyle="bold" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/btn_deploy"
+                    android:layout_width="wrap_content" android:layout_height="54dp"
+                    android:minWidth="160dp" android:text="Deploy" android:textSize="16sp"
+                    app:cornerRadius="16dp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- ===================== LOG TAB ===================== -->
+        <LinearLayout
+            android:id="@+id/tab_log"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone">
+            <LinearLayout
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:gravity="center_vertical"
+                android:paddingHorizontal="16dp" android:paddingTop="12dp" android:paddingBottom="4dp">
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                    android:text="Log" android:textSize="20sp" android:textStyle="bold" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/btn_clear"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Clear" android:minWidth="0dp" />
+            </LinearLayout>
+            <ScrollView android:id="@+id/log_scroll"
+                android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1"
+                android:paddingHorizontal="16dp" android:paddingBottom="12dp">
+                <TextView android:id="@+id/tv_log"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:fontFamily="monospace" android:textSize="11sp"
+                    android:textIsSelectable="true" android:text="" />
+            </ScrollView>
+        </LinearLayout>
+    </FrameLayout>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_nav"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:menu="@menu/bottom_nav" />
+</LinearLayout>

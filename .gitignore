@@ -1,0 +1,26 @@
+# ---- Go ----
+/tun
+/*.test
+*.out
+
+# ---- Generated native artifacts (rebuilt via build.sh) ----
+phone/app/src/main/jniLibs/**/libtun.so
+phone/app/libs/t2smobile.aar
+phone/t2smobile/t2smobile.aar
+
+# ---- Android build outputs ----
+phone/.gradle/
+phone/build/
+phone/app/build/
+phone/**/build/
+phone/local.properties
+*.apk
+*.aab
+
+# ---- Misc ----
+.idea/
+*.iml
+.DS_Store
+
+# Generated server binaries embedded in the app (rebuilt via build.sh)
+phone/app/src/main/assets/server/notes-mail-tunnel-*
