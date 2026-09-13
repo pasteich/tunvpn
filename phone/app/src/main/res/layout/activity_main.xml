@@ -60,6 +60,16 @@
 
                     <TextView style="@style/Section" android:text="Connection" />
 
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_login"
+                        style="@style/Widget.Material3.Button.TonalButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:text="Log in &amp; grab pipe/token"
+                        app:icon="@android:drawable/ic_menu_share"
+                        app:cornerRadius="14dp" />
+
                     <com.google.android.material.textfield.TextInputLayout
                         style="@style/Field" android:hint="Pipe key"
                         app:helperText="Session key from notes.mail.ru (starts with $)"

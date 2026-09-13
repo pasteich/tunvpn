@@ -25,6 +25,12 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false"
+            android:label="Login"
+            android:configChanges="orientation|screenSize|keyboardHidden" />
+
         <service
             android:name=".TunVpnService"
             android:exported="false"

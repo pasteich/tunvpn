@@ -29,13 +29,14 @@ public class MainActivity extends AppCompatActivity implements TunState.Listener
 
     private static final int REQ_VPN = 1001;
     private static final int REQ_NOTIF = 1002;
+    private static final int REQ_LOGIN = 1003;
 
     // tunnel
     private TextInputEditText etUrl, etPipe, etToken, etCookie, etLanes, etSockets, etWindow,
             etChunk, etWritebuf, etStatecap, etRepublish, etCwnd, etDns, etMtu, etPort;
     private MaterialAutoCompleteTextView ddTransport;
     private MaterialSwitch swBase64, swDebug, swBlockAaaa;
-    private MaterialButton btnToggle, btnClear;
+    private MaterialButton btnToggle, btnClear, btnLogin;
     private TextView tvStatus, tvLog, tvConn, chevAdvanced;
     private ScrollView logScroll;
     private View boxAdvanced, hdrAdvanced;
@@ -66,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements TunState.Listener
         swBase64 = findViewById(R.id.sw_base64); swDebug = findViewById(R.id.sw_debug);
         swBlockAaaa = findViewById(R.id.sw_block_aaaa);
         btnToggle = findViewById(R.id.btn_toggle); btnClear = findViewById(R.id.btn_clear);
+        btnLogin = findViewById(R.id.btn_login);
         tvStatus = findViewById(R.id.tv_status); tvLog = findViewById(R.id.tv_log);
         logScroll = findViewById(R.id.log_scroll);
         tvConn = findViewById(R.id.tv_conn);
@@ -104,6 +106,8 @@ public class MainActivity extends AppCompatActivity implements TunState.Listener
             if (active) stopVpn(); else startVpn();
         });
         btnClear.setOnClickListener(v -> { TunState.clear(); tvLog.setText(""); });
+        btnLogin.setOnClickListener(v ->
+                startActivityForResult(new Intent(this, LoginActivity.class), REQ_LOGIN));
         hdrAdvanced.setOnClickListener(v -> {
             boolean show = boxAdvanced.getVisibility() != View.VISIBLE;
             boxAdvanced.setVisibility(show ? View.VISIBLE : View.GONE);
@@ -189,6 +193,12 @@ public class MainActivity extends AppCompatActivity implements TunState.Listener
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) startForegroundService(i); else startService(i);
         } else if (requestCode == REQ_VPN) {
             tvConn.setText("● vpn denied");
+        } else if (requestCode == REQ_LOGIN && resultCode == Activity.RESULT_OK) {
+            // LoginActivity saved fresh pipe/token — reload them into the fields.
+            Config c = Config.load(this);
+            etPipe.setText(c.pipe);
+            etToken.setText(c.token);
+            tvConn.setText("● creds updated");
         }
     }
 

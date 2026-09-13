@@ -28,6 +28,15 @@ the **server's** public IP.
 - Full config with persisted settings; scrollable, de-spammed log; Start/Stop
   always reachable (bottom bar + notification action).
 
+### Auto-login (grab pipe/token)
+- New in-app **Log in & grab pipe/token** flow (`LoginActivity`): a WebView opens
+  notes.mail.ru over real HTTPS; you log in normally (2FA / captcha / passkeys all
+  work), and an injected WebSocket sniffer captures the pipe UUID + token and
+  fills them in automatically — no DevTools, no copy-paste, no Tampermonkey.
+- This is the robust equivalent of the login-relay / TLS-terminating-proxy idea
+  in `auto-cookie-proxy-architecture.md`, without the content-rewriting / CSP /
+  mixed-content / WebAuthn breakage that approach runs into.
+
 ### Notable fixes / decisions made along the way
 - **CGO required for the Android tunnel binary** — with `CGO_ENABLED=0` the pure-Go
   resolver can't see Android's DNS servers (`lookup … on [::1]:53: connection
