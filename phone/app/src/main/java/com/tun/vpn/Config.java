@@ -14,7 +14,7 @@ public class Config {
     public int lanes = 1;
     public int sockets = 1;
     public int window = 4;
-    public int chunk = 700;
+    public int chunk = 16000;
     public int writebuf = 512;
     public int statecap = 4000;
     public String republish = "500ms";

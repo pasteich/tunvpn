@@ -132,62 +132,7 @@
                                         android:inputType="text" android:singleLine="true" />
                                 </com.google.android.material.textfield.TextInputLayout>
 
-                                <TextView style="@style/Section" android:text="Throughput tuning" />
-                                <LinearLayout style="@style/Row">
-                                    <com.google.android.material.textfield.TextInputLayout style="@style/Field.Half" android:hint="lanes">
-                                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/et_lanes"
-                                            android:layout_width="match_parent" android:layout_height="wrap_content"
-                                            android:inputType="number" android:singleLine="true" />
-                                    </com.google.android.material.textfield.TextInputLayout>
-                                    <Space android:layout_width="12dp" android:layout_height="wrap_content" />
-                                    <com.google.android.material.textfield.TextInputLayout style="@style/Field.Half" android:hint="sockets">
-                                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/et_sockets"
-                                            android:layout_width="match_parent" android:layout_height="wrap_content"
-                                            android:inputType="number" android:singleLine="true" />
-                                    </com.google.android.material.textfield.TextInputLayout>
-                                </LinearLayout>
-                                <LinearLayout style="@style/Row">
-                                    <com.google.android.material.textfield.TextInputLayout style="@style/Field.Half" android:hint="window">
-                                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/et_window"
-                                            android:layout_width="match_parent" android:layout_height="wrap_content"
-                                            android:inputType="number" android:singleLine="true" />
-                                    </com.google.android.material.textfield.TextInputLayout>
-                                    <Space android:layout_width="12dp" android:layout_height="wrap_content" />
-                                    <com.google.android.material.textfield.TextInputLayout style="@style/Field.Half" android:hint="chunk (bytes)">
-                                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/et_chunk"
-                                            android:layout_width="match_parent" android:layout_height="wrap_content"
-                                            android:inputType="number" android:singleLine="true" />
-                                    </com.google.android.material.textfield.TextInputLayout>
-                                </LinearLayout>
-                                <LinearLayout style="@style/Row">
-                                    <com.google.android.material.textfield.TextInputLayout style="@style/Field.Half" android:hint="writebuf">
-                                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/et_writebuf"
-                                            android:layout_width="match_parent" android:layout_height="wrap_content"
-                                            android:inputType="number" android:singleLine="true" />
-                                    </com.google.android.material.textfield.TextInputLayout>
-                                    <Space android:layout_width="12dp" android:layout_height="wrap_content" />
-                                    <com.google.android.material.textfield.TextInputLayout style="@style/Field.Half" android:hint="state-cap">
-                                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/et_statecap"
-                                            android:layout_width="match_parent" android:layout_height="wrap_content"
-                                            android:inputType="number" android:singleLine="true" />
-                                    </com.google.android.material.textfield.TextInputLayout>
-                                </LinearLayout>
-                                <LinearLayout style="@style/Row">
-                                    <com.google.android.material.textfield.TextInputLayout style="@style/Field.Half" android:hint="republish">
-                                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/et_republish"
-                                            android:layout_width="match_parent" android:layout_height="wrap_content"
-                                            android:inputType="text" android:singleLine="true" />
-                                    </com.google.android.material.textfield.TextInputLayout>
-                                    <Space android:layout_width="12dp" android:layout_height="wrap_content" />
-                                    <com.google.android.material.textfield.TextInputLayout style="@style/Field.Half" android:hint="cwnd (bytes)">
-                                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/et_cwnd"
-                                            android:layout_width="match_parent" android:layout_height="wrap_content"
-                                            android:inputType="number" android:singleLine="true" />
-                                    </com.google.android.material.textfield.TextInputLayout>
-                                </LinearLayout>
-                                <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/sw_base64"
-                                    android:layout_width="match_parent" android:layout_height="wrap_content"
-                                    android:text="base64 payload encoding" android:paddingVertical="8dp" />
+
                                 <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/sw_debug"
                                     android:layout_width="match_parent" android:layout_height="wrap_content"
                                     android:text="verbose debug logging" android:paddingVertical="8dp" />
@@ -301,6 +246,93 @@
                             android:text="Remove" app:cornerRadius="14dp"
                             app:strokeColor="#E74C3C" android:textColor="#E74C3C" />
                     </LinearLayout>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        app:cardCornerRadius="16dp" app:cardElevation="0dp"
+                        app:strokeWidth="1dp" app:strokeColor="#22808080">
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+                            <LinearLayout android:id="@+id/hdr_params"
+                                android:layout_width="match_parent" android:layout_height="wrap_content"
+                                android:orientation="horizontal" android:gravity="center_vertical"
+                                android:background="?attr/selectableItemBackground"
+                                android:paddingHorizontal="16dp" android:paddingVertical="16dp"
+                                android:clickable="true" android:focusable="true">
+                                <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                                    android:layout_weight="1" android:text="Tunnel parameters"
+                                    android:textSize="15sp" android:textStyle="bold" />
+                                <TextView android:id="@+id/chev_params"
+                                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                    android:text="▸" android:textSize="16sp" android:alpha="0.7" />
+                            </LinearLayout>
+                            <LinearLayout android:id="@+id/box_params"
+                                android:layout_width="match_parent" android:layout_height="wrap_content"
+                                android:orientation="vertical" android:visibility="gone"
+                                android:paddingHorizontal="16dp" android:paddingBottom="8dp">
+                                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                                    android:text="Applied to BOTH the deployed server and the client — they must match. Speed mode (awareness/sync) is set on the Tunnel tab."
+                                    android:textSize="12sp" android:alpha="0.65" android:paddingBottom="8dp" />
+                                <TextView style="@style/Section" android:text="Throughput tuning" />
+                                <LinearLayout style="@style/Row">
+                                    <com.google.android.material.textfield.TextInputLayout style="@style/Field.Half" android:hint="lanes">
+                                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/et_lanes"
+                                            android:layout_width="match_parent" android:layout_height="wrap_content"
+                                            android:inputType="number" android:singleLine="true" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                    <Space android:layout_width="12dp" android:layout_height="wrap_content" />
+                                    <com.google.android.material.textfield.TextInputLayout style="@style/Field.Half" android:hint="sockets">
+                                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/et_sockets"
+                                            android:layout_width="match_parent" android:layout_height="wrap_content"
+                                            android:inputType="number" android:singleLine="true" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                                <LinearLayout style="@style/Row">
+                                    <com.google.android.material.textfield.TextInputLayout style="@style/Field.Half" android:hint="window">
+                                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/et_window"
+                                            android:layout_width="match_parent" android:layout_height="wrap_content"
+                                            android:inputType="number" android:singleLine="true" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                    <Space android:layout_width="12dp" android:layout_height="wrap_content" />
+                                    <com.google.android.material.textfield.TextInputLayout style="@style/Field.Half" android:hint="chunk (bytes)">
+                                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/et_chunk"
+                                            android:layout_width="match_parent" android:layout_height="wrap_content"
+                                            android:inputType="number" android:singleLine="true" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                                <LinearLayout style="@style/Row">
+                                    <com.google.android.material.textfield.TextInputLayout style="@style/Field.Half" android:hint="writebuf">
+                                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/et_writebuf"
+                                            android:layout_width="match_parent" android:layout_height="wrap_content"
+                                            android:inputType="number" android:singleLine="true" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                    <Space android:layout_width="12dp" android:layout_height="wrap_content" />
+                                    <com.google.android.material.textfield.TextInputLayout style="@style/Field.Half" android:hint="state-cap">
+                                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/et_statecap"
+                                            android:layout_width="match_parent" android:layout_height="wrap_content"
+                                            android:inputType="number" android:singleLine="true" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                                <LinearLayout style="@style/Row">
+                                    <com.google.android.material.textfield.TextInputLayout style="@style/Field.Half" android:hint="republish">
+                                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/et_republish"
+                                            android:layout_width="match_parent" android:layout_height="wrap_content"
+                                            android:inputType="text" android:singleLine="true" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                    <Space android:layout_width="12dp" android:layout_height="wrap_content" />
+                                    <com.google.android.material.textfield.TextInputLayout style="@style/Field.Half" android:hint="cwnd (bytes)">
+                                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/et_cwnd"
+                                            android:layout_width="match_parent" android:layout_height="wrap_content"
+                                            android:inputType="number" android:singleLine="true" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                                <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/sw_base64"
+                                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                                    android:text="base64 payload encoding" android:paddingVertical="8dp" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
 
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="match_parent" android:layout_height="wrap_content"

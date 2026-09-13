@@ -43,8 +43,8 @@ public class MainActivity extends AppCompatActivity implements TunState.Listener
     private TextInputEditText etSshHost, etSshUser, etSshPort, etSshPass;
     private MaterialButton btnDeploy, btnUpdateCreds, btnUninstall;
     private LinearProgressIndicator deployProgress;
-    private View deploySteps;
-    private TextView deployStatus, deployHint;
+    private View deploySteps, hdrParams, boxParams;
+    private TextView deployStatus, deployHint, chevParams;
     // tabs
     private View tabTunnel, tabServer, tabLog;
 
@@ -77,6 +77,8 @@ public class MainActivity extends AppCompatActivity implements TunState.Listener
         btnUninstall = findViewById(R.id.btn_uninstall);
         deployProgress = findViewById(R.id.deploy_progress); deploySteps = findViewById(R.id.deploy_steps);
         deployStatus = findViewById(R.id.deploy_status); deployHint = findViewById(R.id.deploy_hint);
+        hdrParams = findViewById(R.id.hdr_params); boxParams = findViewById(R.id.box_params);
+        chevParams = findViewById(R.id.chev_params);
 
         tabTunnel = findViewById(R.id.tab_tunnel); tabServer = findViewById(R.id.tab_server);
         tabLog = findViewById(R.id.tab_log);
@@ -104,6 +106,11 @@ public class MainActivity extends AppCompatActivity implements TunState.Listener
             boolean show = boxAdvanced.getVisibility() != View.VISIBLE;
             boxAdvanced.setVisibility(show ? View.VISIBLE : View.GONE);
             chevAdvanced.setText(show ? "▾" : "▸");
+        });
+        hdrParams.setOnClickListener(v -> {
+            boolean show = boxParams.getVisibility() != View.VISIBLE;
+            boxParams.setVisibility(show ? View.VISIBLE : View.GONE);
+            chevParams.setText(show ? "▾" : "▸");
         });
 
         btnDeploy.setOnClickListener(v -> runDeploy(0));
