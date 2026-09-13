@@ -36,12 +36,13 @@ public class MainActivity extends AppCompatActivity implements TunState.Listener
     private MaterialAutoCompleteTextView ddTransport;
     private MaterialSwitch swBase64, swDebug, swBlockAaaa;
     private MaterialButton btnToggle, btnClear;
-    private TextView tvStatus, tvLog, heroStatus, heroSub, heroIcon, chevAdvanced;
+    private TextView tvStatus, tvLog, tvConn, chevAdvanced;
     private ScrollView logScroll;
     private View boxAdvanced, hdrAdvanced;
+    private MatrixRainView matrix;
     // server
     private TextInputEditText etSshHost, etSshUser, etSshPort, etSshPass;
-    private MaterialButton btnDeploy, btnUpdateCreds, btnUninstall;
+    private MaterialButton btnDeploy, btnUpdateCreds, btnUninstall, btnCheck;
     private LinearProgressIndicator deployProgress;
     private View deploySteps, hdrParams, boxParams;
     private TextView deployStatus, deployHint, chevParams;
@@ -67,14 +68,15 @@ public class MainActivity extends AppCompatActivity implements TunState.Listener
         btnToggle = findViewById(R.id.btn_toggle); btnClear = findViewById(R.id.btn_clear);
         tvStatus = findViewById(R.id.tv_status); tvLog = findViewById(R.id.tv_log);
         logScroll = findViewById(R.id.log_scroll);
-        heroStatus = findViewById(R.id.hero_status); heroSub = findViewById(R.id.hero_sub);
-        heroIcon = findViewById(R.id.hero_icon); chevAdvanced = findViewById(R.id.chev_advanced);
+        tvConn = findViewById(R.id.tv_conn);
+        chevAdvanced = findViewById(R.id.chev_advanced);
         boxAdvanced = findViewById(R.id.box_advanced); hdrAdvanced = findViewById(R.id.hdr_advanced);
+        matrix = findViewById(R.id.matrix);
 
         etSshHost = f(R.id.et_ssh_host); etSshUser = f(R.id.et_ssh_user);
         etSshPort = f(R.id.et_ssh_port); etSshPass = f(R.id.et_ssh_pass);
         btnDeploy = findViewById(R.id.btn_deploy); btnUpdateCreds = findViewById(R.id.btn_update_creds);
-        btnUninstall = findViewById(R.id.btn_uninstall);
+        btnUninstall = findViewById(R.id.btn_uninstall); btnCheck = findViewById(R.id.btn_check);
         deployProgress = findViewById(R.id.deploy_progress); deploySteps = findViewById(R.id.deploy_steps);
         deployStatus = findViewById(R.id.deploy_status); deployHint = findViewById(R.id.deploy_hint);
         hdrParams = findViewById(R.id.hdr_params); boxParams = findViewById(R.id.box_params);
@@ -116,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements TunState.Listener
         btnDeploy.setOnClickListener(v -> runDeploy(0));
         btnUpdateCreds.setOnClickListener(v -> runDeploy(1));
         btnUninstall.setOnClickListener(v -> confirmUninstall());
+        btnCheck.setOnClickListener(v -> checkServer());
 
         requestNotifPermission();
     }
@@ -163,7 +166,7 @@ public class MainActivity extends AppCompatActivity implements TunState.Listener
     // ---------------- VPN ----------------
     private void startVpn() {
         Config c = gather();
-        if (c.pipe.isEmpty() || c.token.isEmpty()) { heroSub.setText("Enter pipe key and token first"); return; }
+        if (c.pipe.isEmpty() || c.token.isEmpty()) { tvConn.setText("● need pipe/token"); return; }
         c.save(this);
         Intent prep = VpnService.prepare(this);
         if (prep != null) startActivityForResult(prep, REQ_VPN);
@@ -185,8 +188,33 @@ public class MainActivity extends AppCompatActivity implements TunState.Listener
             c.toIntent(i);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) startForegroundService(i); else startService(i);
         } else if (requestCode == REQ_VPN) {
-            heroSub.setText("VPN permission denied");
+            tvConn.setText("● vpn denied");
         }
+    }
+
+    // ---------------- Check server ----------------
+    private void checkServer() {
+        Config c = gather();
+        if (c.sshHost.isEmpty() || c.sshPass.isEmpty()) { deployHint.setText("Fill server host and SSH password."); return; }
+        c.save(this);
+        deployHint.setText("Checking " + c.sshHost + "…");
+        new DeployManager(this, c, null).checkServer((active, text) -> runOnUiThread(() -> {
+            TextView tv = new TextView(this);
+            int pad = (int) (16 * getResources().getDisplayMetrics().density);
+            tv.setPadding(pad, pad, pad, pad);
+            tv.setText(text);
+            tv.setTextSize(11);
+            tv.setTypeface(android.graphics.Typeface.MONOSPACE);
+            tv.setTextIsSelectable(true);
+            ScrollView sv = new ScrollView(this);
+            sv.addView(tv);
+            deployHint.setText(active ? "Server: active ✓" : "Server: not active ✗");
+            new AlertDialog.Builder(this)
+                    .setTitle(active ? "Server active ✓" : "Server ✗")
+                    .setView(sv)
+                    .setPositiveButton("Close", null)
+                    .show();
+        }));
     }
 
     // ---------------- Deploy ----------------
@@ -279,9 +307,14 @@ public class MainActivity extends AppCompatActivity implements TunState.Listener
         onRunningChanged(TunState.isRunning());
         onPhase(TunState.phase(), TunState.phaseDetail());
         renderLogs();
+        if (matrix != null) matrix.resume();
     }
 
-    @Override protected void onPause() { super.onPause(); TunState.setListener(null); }
+    @Override protected void onPause() {
+        super.onPause();
+        TunState.setListener(null);
+        if (matrix != null) matrix.pause();
+    }
 
     private void renderLogs() {
         List<String> lines = TunState.snapshot();
@@ -297,29 +330,24 @@ public class MainActivity extends AppCompatActivity implements TunState.Listener
     }
 
     @Override public void onPhase(String phase, String detail) {
-        String icon, title, sub, dot;
+        String dot; int col;
         switch (phase) {
             case TunState.CONNECTED:
-                icon = "🛡️"; title = "Connected"; dot = "● Connected";
-                sub = "All device traffic is tunneled"; break;
+                dot = "● connected"; col = 0xFF7FB069; break;
             case TunState.CONNECTING:
             case TunState.STARTING:
-                icon = "🔄"; title = "Connecting…"; dot = "◐ Connecting";
-                sub = detail == null || detail.isEmpty() ? "Bringing the tunnel up…" : detail; break;
+                dot = "◐ connecting"; col = 0xFFB0824F; break;
             case TunState.AUTH_FAIL:
-                icon = "⛔"; title = "Auth failed"; dot = "✗ Auth failed";
-                sub = "Relay rejected pipe/token — refresh them"; break;
+                dot = "✗ auth failed"; col = 0xFFD0674A; break;
             case TunState.NO_ROUTE:
-                icon = "⚠️"; title = "No route"; dot = "⚠ No route";
-                sub = "VPN is up but traffic isn't passing (is the server running?)"; break;
+                dot = "⚠ no route"; col = 0xFFD0674A; break;
             case TunState.ERROR:
-                icon = "⚠️"; title = "Error"; dot = "✗ Error";
-                sub = detail == null ? "Error" : detail; break;
+                dot = "✗ error"; col = 0xFFD0674A; break;
             default:
-                icon = "🔒"; title = "Disconnected"; dot = "● Stopped";
-                sub = "Whole-device traffic is not protected";
+                dot = "● offline"; col = 0xFFB9A588;
         }
-        heroIcon.setText(icon); heroStatus.setText(title); heroSub.setText(sub); tvStatus.setText(dot);
+        if (tvConn != null) { tvConn.setText(dot); tvConn.setTextColor(col); }
+        if (tvStatus != null) { tvStatus.setText(dot); tvStatus.setTextColor(col); }
         btnToggle.setText(TunState.DISCONNECTED.equals(phase) ? "Start VPN" : "Stop VPN");
     }
 

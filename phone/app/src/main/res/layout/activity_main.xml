@@ -11,6 +11,12 @@
         android:layout_height="0dp"
         android:layout_weight="1">
 
+        <com.tun.vpn.MatrixRainView
+            android:id="@+id/matrix"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:alpha="0.16" />
+
         <!-- ===================== TUNNEL TAB ===================== -->
         <LinearLayout
             android:id="@+id/tab_tunnel"
@@ -30,33 +36,27 @@
                     android:orientation="vertical"
                     android:padding="16dp">
 
-                    <com.google.android.material.card.MaterialCardView
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:cardCornerRadius="24dp"
-                        app:cardElevation="0dp"
-                        app:cardBackgroundColor="?attr/colorPrimaryContainer"
-                        android:layout_marginBottom="20dp">
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:gravity="center_horizontal"
-                            android:padding="24dp">
-                            <TextView android:id="@+id/hero_icon"
-                                android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                android:text="🔒" android:textSize="40sp" />
-                            <TextView android:id="@+id/hero_status"
-                                android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                android:text="Disconnected" android:textSize="24sp" android:textStyle="bold"
-                                android:textColor="?attr/colorOnPrimaryContainer" android:paddingTop="8dp" />
-                            <TextView android:id="@+id/hero_sub"
-                                android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                android:text="Whole-device traffic is not protected" android:textSize="13sp"
-                                android:gravity="center" android:alpha="0.75"
-                                android:textColor="?attr/colorOnPrimaryContainer" android:paddingTop="2dp" />
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingBottom="14dp">
+                        <TextView
+                            android:layout_width="0dp" android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="notes_mail_tunnel"
+                            android:fontFamily="monospace"
+                            android:textSize="16sp" android:textStyle="bold"
+                            android:textColor="?attr/colorPrimary" />
+                        <TextView
+                            android:id="@+id/tv_conn"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="● offline"
+                            android:fontFamily="monospace"
+                            android:textSize="13sp"
+                            android:textColor="?attr/colorOnSurfaceVariant" />
+                    </LinearLayout>
 
                     <TextView style="@style/Section" android:text="Connection" />
 
@@ -246,6 +246,12 @@
                             android:text="Remove" app:cornerRadius="14dp"
                             app:strokeColor="#E74C3C" android:textColor="#E74C3C" />
                     </LinearLayout>
+
+                    <com.google.android.material.button.MaterialButton android:id="@+id/btn_check"
+                        style="@style/Widget.Material3.Button.TonalButton"
+                        android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Check server (status + log)" app:cornerRadius="14dp" />
 
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="match_parent" android:layout_height="wrap_content"

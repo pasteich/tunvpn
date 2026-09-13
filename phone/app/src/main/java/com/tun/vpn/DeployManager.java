@@ -65,6 +65,34 @@ public class DeployManager {
         new Thread(this::runUninstall, "deploy-uninstall").start();
     }
 
+    public interface CheckCb {
+        void result(boolean active, String text);
+    }
+
+    /** Read the service status + recent journal, no changes. */
+    public void checkServer(CheckCb cb) {
+        new Thread(() -> {
+            Session s = null;
+            try {
+                s = connect();
+                String active = exec(s, "systemctl is-active " + SERVICE + " 2>/dev/null", null).out.trim();
+                String enabled = exec(s, "systemctl is-enabled " + SERVICE + " 2>/dev/null", null).out.trim();
+                String args = exec(s, "grep -o '\\-server .*' " + UNIT_PATH + " 2>/dev/null", null).out.trim();
+                String logs = exec(s, "journalctl -u " + SERVICE + " --no-pager -n 40 2>&1 | sed 's/\\x1b\\[[0-9;]*m//g'", null).out;
+                StringBuilder b = new StringBuilder();
+                b.append("● status : ").append(active.isEmpty() ? "unknown" : active)
+                        .append("  (").append(enabled.isEmpty() ? "?" : enabled).append(")\n");
+                if (!args.isEmpty()) b.append("args   : ").append(args).append("\n");
+                b.append("\n").append(logs.trim());
+                cb.result("active".equals(active), b.toString());
+            } catch (Throwable t) {
+                cb.result(false, "Error: " + t.getMessage());
+            } finally {
+                if (s != null) s.disconnect();
+            }
+        }, "deploy-check").start();
+    }
+
     private static final String[] UPDATE_STEPS = {
             "Connect over SSH", "Write updated credentials", "Restart service", "Verify service is running",
     };
